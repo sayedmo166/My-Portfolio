@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../bloc/portfolio_bloc.dart';
 import '../widgets/hero_section.dart';
 import '../widgets/nav_bar.dart';
+import '../widgets/skills_section.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey _homeKey = GlobalKey();
+  final GlobalKey _skillsKey = GlobalKey();
   final GlobalKey _projectsKey = GlobalKey();
   final GlobalKey _contactKey = GlobalKey();
 
@@ -52,12 +54,16 @@ class _HomePageState extends State<HomePage> {
             children: [
               NavBar(
                 onHomeClick: () => _scrollTo(_homeKey),
+                onSkillsClick: () => _scrollTo(_skillsKey),
                 onProjectsClick: () => _scrollTo(_projectsKey),
                 onContactClick: () => _scrollTo(_contactKey),
               ),
 
               // Home Section
               Container(key: _homeKey, child: const HeroSection()),
+
+              // Skills Section
+              Container(key: _skillsKey, child: const SkillsSection()),
 
               const SizedBox(height: 60),
 
@@ -170,6 +176,17 @@ class _HomePageState extends State<HomePage> {
     if (state is PortfolioLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (state is PortfolioLoaded) {
+      if (crossAxisCount == 1) {
+        return Column(
+          children:
+              state.projects.map((project) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: ProjectCard(project: project),
+                );
+              }).toList(),
+        );
+      }
       return GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),

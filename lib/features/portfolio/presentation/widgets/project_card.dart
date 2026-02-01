@@ -23,111 +23,106 @@ class ProjectCard extends StatelessWidget {
     return HoverableCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, // Use min size to fit content
         children: [
           // Image / Header
-          Expanded(
-            flex: 3,
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.secondaryBackground,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-                image:
-                    project.imageUrl != null
-                        ? DecorationImage(
-                          image: AssetImage(project.imageUrl!),
-                          fit: BoxFit.cover,
-                        )
-                        : null,
+          Container(
+            height: 200, // Fixed height for image area
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.secondaryBackground,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
               ),
-              child:
-                  project.imageUrl == null
-                      ? const Center(
-                        child: Icon(
-                          Icons.code,
-                          size: 50,
-                          color: AppColors.secondaryText,
-                        ),
+              image:
+                  project.imageUrl != null
+                      ? DecorationImage(
+                        image: AssetImage(project.imageUrl!),
+                        fit: BoxFit.cover,
                       )
                       : null,
             ),
+            child:
+                project.imageUrl == null
+                    ? const Center(
+                      child: Icon(
+                        Icons.code,
+                        size: 50,
+                        color: AppColors.secondaryText,
+                      ),
+                    )
+                    : null,
           ),
-          Expanded(
-            flex: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    project.title,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: Text(
-                      project.description,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Tech Stack
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    children:
-                        project.techStack
-                            .map(
-                              (tech) => Chip(
-                                label: Text(
-                                  tech,
-                                  style: const TextStyle(fontSize: 10),
-                                ),
-                                backgroundColor: AppColors.primaryBackground,
-                                padding: EdgeInsets.zero,
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  project.title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  project.description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 10),
+                // Tech Stack
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children:
+                      project.techStack
+                          .map(
+                            (tech) => Chip(
+                              label: Text(
+                                tech,
+                                style: const TextStyle(fontSize: 10),
                               ),
-                            )
-                            .toList(),
-                  ),
-                  const SizedBox(height: 10),
-                  // Links
-                  Wrap(
-                    spacing: 10,
-                    children: [
-                      if (project.googlePlayLink != null)
-                        IconButton(
-                          icon: const FaIcon(
-                            FontAwesomeIcons.googlePlay,
-                            color: AppColors.primaryText,
-                          ),
-                          onPressed: () => _launchUrl(project.googlePlayLink),
-                          tooltip: 'Google Play',
+                              backgroundColor: AppColors.primaryBackground,
+                              padding: EdgeInsets.zero,
+                            ),
+                          )
+                          .toList(),
+                ),
+                const SizedBox(height: 10),
+                // Links
+                Wrap(
+                  spacing: 10,
+                  children: [
+                    if (project.googlePlayLink != null)
+                      IconButton(
+                        icon: const FaIcon(
+                          FontAwesomeIcons.googlePlay,
+                          color: AppColors.primaryText,
                         ),
-                      if (project.appStoreLink != null)
-                        IconButton(
-                          icon: const FaIcon(
-                            FontAwesomeIcons.appStore,
-                            color: AppColors.primaryText,
-                          ),
-                          onPressed: () => _launchUrl(project.appStoreLink),
-                          tooltip: 'App Store',
+                        onPressed: () => _launchUrl(project.googlePlayLink),
+                        tooltip: 'Google Play',
+                      ),
+                    if (project.appStoreLink != null)
+                      IconButton(
+                        icon: const FaIcon(
+                          FontAwesomeIcons.appStore,
+                          color: AppColors.primaryText,
                         ),
-                      if (project.webLink != null)
-                        IconButton(
-                          icon: const FaIcon(
-                            FontAwesomeIcons.globe,
-                            color: AppColors.primaryText,
-                          ),
-                          onPressed: () => _launchUrl(project.webLink),
-                          tooltip: 'Website',
+                        onPressed: () => _launchUrl(project.appStoreLink),
+                        tooltip: 'App Store',
+                      ),
+                    if (project.webLink != null)
+                      IconButton(
+                        icon: const FaIcon(
+                          FontAwesomeIcons.globe,
+                          color: AppColors.primaryText,
                         ),
-                    ],
-                  ),
-                ],
-              ),
+                        onPressed: () => _launchUrl(project.webLink),
+                        tooltip: 'Website',
+                      ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
