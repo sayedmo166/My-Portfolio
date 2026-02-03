@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  // ============ DARK THEME ============
   // Backgrounds
-  static const Color primaryBackground = Color(
-    0xFF0A0A0A,
-  ); // Very dark, almost black
-  static const Color secondaryBackground = Color(
-    0xFF161616,
-  ); // Slightly lighter for cards
+  static const Color primaryBackground = Color(0xFF0A0A0A);
+  static const Color secondaryBackground = Color(0xFF161616);
 
   // Accents
   static const Color primaryAccent = Color(0xFF00E5FF); // Cyan
@@ -29,4 +26,16 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  // ============ LIGHT THEME ============
+  static const Color lightPrimaryBackground = Color(0xFFFAFAFA);
+  static const Color lightSecondaryBackground = Color(0xFFFFFFFF);
+  static const Color lightPrimaryText = Color(0xFF1A1A1A);
+  static const Color lightSecondaryText = Color(0xFF666666);
+
+  // Status Colors
+  static const Color success = Color(0xFF4CAF50);
+  static const Color error = Color(0xFFE53935);
+  static const Color warning = Color(0xFFFF9800);
+  static const Color info = Color(0xFF2196F3);
 }

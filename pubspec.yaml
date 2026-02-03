@@ -50,6 +50,11 @@ dependencies:
   
   # Responsiveness
   responsive_builder: ^0.7.1
+  
+  # Advanced UI
+  animated_text_kit: ^4.2.2
+  shimmer: ^3.0.0
+  visibility_detector: ^0.4.0+2
 
 dev_dependencies:
   flutter_test:

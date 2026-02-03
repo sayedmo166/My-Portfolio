@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:responsive_builder/responsive_builder.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -10,12 +10,16 @@ class HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenTypeLayout.builder(
-      mobile: (ctx) => _HeroMobile(),
-      desktop: (ctx) => _HeroDesktop(),
-      tablet:
-          (ctx) =>
-              _HeroMobile(), // Use mobile layout for tablet/desktop-mode on phone
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Fix for Desktop Mode: Use width constraint instead of responsive_builder
+        final isNarrow = constraints.maxWidth < 800;
+
+        if (isNarrow) {
+          return _HeroMobile();
+        }
+        return _HeroDesktop();
+      },
     );
   }
 }
@@ -35,7 +39,9 @@ class _HeroDesktop extends StatelessWidget {
                 const SizedBox(height: 10),
                 _buildNameText(context, fontSize: 64),
                 const SizedBox(height: 20),
-                _buildRoleText(context),
+                _buildTypingRoleText(context),
+                const SizedBox(height: 20),
+                _buildBioText(context),
                 const SizedBox(height: 40),
                 _buildButtons(context),
               ],
@@ -55,17 +61,16 @@ class _HeroMobile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       child: Column(
         children: [
-          // On mobile, show image first or second? Usually Image then text, or Text then image.
-          // Let's stick to standard flow: Text then Image, or maybe Image top for personal branding.
-          // Let's do Text top for now properly aligned.
           _buildHelloText(context),
           const SizedBox(height: 10),
-          _buildNameText(context, fontSize: 40), // Smaller font for mobile
+          _buildNameText(context, fontSize: 36),
           const SizedBox(height: 16),
-          _buildRoleText(context),
-          const SizedBox(height: 40),
-          _buildHeroImage(height: 300),
-          const SizedBox(height: 40),
+          _buildTypingRoleText(context),
+          const SizedBox(height: 16),
+          _buildBioText(context, isMobile: true),
+          const SizedBox(height: 30),
+          _buildHeroImage(height: 280),
+          const SizedBox(height: 30),
           _buildButtons(context, isMobile: true),
         ],
       ),
@@ -73,7 +78,7 @@ class _HeroMobile extends StatelessWidget {
   }
 }
 
-// Shared Widgets Helpers to avoid duplication
+// Shared Widgets Helpers
 Widget _buildHelloText(BuildContext context) {
   return Text(
     "Hello, I'm",
@@ -92,13 +97,48 @@ Widget _buildNameText(BuildContext context, {required double fontSize}) {
   ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.2);
 }
 
-Widget _buildRoleText(BuildContext context) {
+Widget _buildTypingRoleText(BuildContext context) {
+  return SizedBox(
+    height: 40,
+    child: DefaultTextStyle(
+      style:
+          Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: AppColors.primaryAccent,
+            fontWeight: FontWeight.w500,
+          ) ??
+          const TextStyle(),
+      child: AnimatedTextKit(
+        repeatForever: true,
+        pause: const Duration(milliseconds: 1000),
+        animatedTexts: [
+          TypewriterAnimatedText(
+            'Flutter Developer',
+            speed: const Duration(milliseconds: 80),
+          ),
+          TypewriterAnimatedText(
+            'Mobile App Expert',
+            speed: const Duration(milliseconds: 80),
+          ),
+          TypewriterAnimatedText(
+            'Clean Architecture Enthusiast',
+            speed: const Duration(milliseconds: 80),
+          ),
+        ],
+      ),
+    ),
+  ).animate().fadeIn(delay: 400.ms);
+}
+
+Widget _buildBioText(BuildContext context, {bool isMobile = false}) {
   return Text(
-    "Flutter Developer",
-    style: Theme.of(
-      context,
-    ).textTheme.headlineMedium?.copyWith(color: AppColors.secondaryText),
-  ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.2);
+    "Passionate Flutter developer with 1.5+ years of experience building scalable, high-performance mobile apps. "
+    "Expert in Bloc, Cubit, Clean Architecture, Firebase, and delivering production-ready apps to Google Play & App Store.",
+    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+      color: AppColors.secondaryText,
+      height: 1.6,
+    ),
+    textAlign: isMobile ? TextAlign.center : TextAlign.start,
+  ).animate().fadeIn(delay: 500.ms);
 }
 
 Widget _buildHeroImage({double height = 400}) {
@@ -124,39 +164,35 @@ Widget _buildHeroImage({double height = 400}) {
 
 Widget _buildButtons(BuildContext context, {bool isMobile = false}) {
   final buttons = [
-    ElevatedButton(
+    ElevatedButton.icon(
       onPressed: () async {
         final uri = Uri.parse("https://flowcv.com/resume/s08lg7guwu");
         if (await canLaunchUrl(uri)) await launchUrl(uri);
       },
+      icon: const Icon(Icons.description, size: 20),
+      label: const Text("Download CV"),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryAccent,
         foregroundColor: Colors.black,
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-        minimumSize: isMobile ? const Size(double.infinity, 50) : null,
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+        minimumSize: isMobile ? const Size(double.infinity, 54) : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      child: const Text("My CV"),
     ).animate().fadeIn(delay: 600.ms),
-    SizedBox(width: isMobile ? 0 : 20, height: isMobile ? 16 : 0),
-    OutlinedButton(
+    SizedBox(width: isMobile ? 0 : 16, height: isMobile ? 12 : 0),
+    OutlinedButton.icon(
       onPressed: () async {
         final uri = Uri.parse("https://wa.me/+201095990437");
         if (await canLaunchUrl(uri)) await launchUrl(uri);
       },
+      icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 20),
+      label: const Text("WhatsApp"),
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primaryAccent,
-        side: BorderSide(color: AppColors.primaryAccent),
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-        minimumSize: isMobile ? const Size(double.infinity, 50) : null,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          FaIcon(FontAwesomeIcons.whatsapp, size: 20),
-          SizedBox(width: 10),
-          Text("WhatsApp"),
-        ],
+        side: BorderSide(color: AppColors.primaryAccent, width: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+        minimumSize: isMobile ? const Size(double.infinity, 54) : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ).animate().fadeIn(delay: 700.ms),
   ];
@@ -167,7 +203,6 @@ Widget _buildButtons(BuildContext context, {bool isMobile = false}) {
       children: buttons,
     );
   } else {
-    // Desktop: Use Wrap to handle narrow widths safely
-    return Wrap(runSpacing: 16, spacing: 20, children: buttons);
+    return Wrap(runSpacing: 16, spacing: 16, children: buttons);
   }
 }

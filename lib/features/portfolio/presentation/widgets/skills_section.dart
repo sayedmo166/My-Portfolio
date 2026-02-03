@@ -1,42 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class SkillCategory {
   final String title;
+  final IconData icon;
   final List<String> skills;
 
-  SkillCategory({required this.title, required this.skills});
+  SkillCategory({
+    required this.title,
+    required this.icon,
+    required this.skills,
+  });
 }
 
 class SkillsSection extends StatelessWidget {
   const SkillsSection({super.key});
 
   static final List<SkillCategory> skillsData = [
-    SkillCategory(title: "Programming Languages", skills: ["Dart"]),
+    SkillCategory(
+      title: "Programming Languages",
+      icon: Icons.code,
+      skills: ["Dart", "JavaScript"],
+    ),
     SkillCategory(
       title: "Mobile Development",
-      skills: ["Flutter", "Responsive UI", "Localization", "APIs"],
+      icon: Icons.phone_android,
+      skills: ["Flutter", "Responsive UI", "Localization", "APIs Integration"],
     ),
     SkillCategory(
       title: "State Management",
+      icon: Icons.sync_alt,
       skills: ["Bloc", "Cubit", "Provider"],
     ),
     SkillCategory(
       title: "Architecture Patterns",
-      skills: ["MVVM", "Clean Architecture"],
+      icon: Icons.architecture,
+      skills: ["MVVM", "Clean Architecture", "Repository Pattern"],
     ),
     SkillCategory(
       title: "Networking",
-      skills: ["Dio", "Http", "Error Handling", "RESTful Services"],
+      icon: Icons.cloud,
+      skills: [
+        "Dio",
+        "Http",
+        "Error Handling",
+        "Token Refresh",
+        "RESTful Services",
+      ],
     ),
     SkillCategory(
       title: "Tools & Backend",
+      icon: Icons.build,
       skills: [
-        "Firebase (Auth, Firestore, Storage)",
-        "Git",
-        "GitHub",
+        "Firebase (Auth, Firestore, FCM, Storage)",
+        "Git & GitHub",
         "Google Play Store",
         "Apple App Store",
         "CI/CD",
@@ -45,18 +63,21 @@ class SkillsSection extends StatelessWidget {
     ),
     SkillCategory(
       title: "Advanced Integrations",
+      icon: Icons.extension,
       skills: [
         "Google Maps",
         "Voice & Video Calls (Agora/WebRTC)",
         "Payment (Stripe, PayPal, Vodafone Cash)",
-        "Real-time (Pusher)",
+        "Real-time (Pusher/WebSocket)",
         "AI Model Integration",
       ],
     ),
     SkillCategory(
       title: "Additional Features",
+      icon: Icons.star,
       skills: [
-        "Notifications (Local & FCM)",
+        "Push Notifications (FCM)",
+        "Local Notifications",
         "Data Caching",
         "Code Optimization",
         "Lazy Loading",
@@ -82,16 +103,21 @@ class SkillsSection extends StatelessWidget {
           ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.2, end: 0),
           const SizedBox(height: 10),
           Text(
-            "My technical proficiency and tools I use to build world-class apps.",
+            "Technologies I use to build world-class applications",
             style: Theme.of(
               context,
             ).textTheme.bodyLarge?.copyWith(color: Colors.grey[400]),
           ).animate().fadeIn(delay: 200.ms, duration: 600.ms),
           const SizedBox(height: 50),
-          ScreenTypeLayout.builder(
-            mobile: (ctx) => _buildSkillsList(crossAxisCount: 1),
-            tablet: (ctx) => _buildSkillsList(crossAxisCount: 2),
-            desktop: (ctx) => _buildSkillsList(crossAxisCount: 3),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // Fix for Desktop Mode on mobile
+              final isNarrow = constraints.maxWidth < 600;
+              final isMedium = constraints.maxWidth < 900;
+              final crossAxisCount = isNarrow ? 1 : (isMedium ? 2 : 3);
+
+              return _buildSkillsList(crossAxisCount: crossAxisCount);
+            },
           ),
         ],
       ),
@@ -117,7 +143,6 @@ class SkillsSection extends StatelessWidget {
             child: Column(
               children:
                   columns[i].map((category) {
-                    // Calculate original index for animation delay
                     int index = skillsData.indexOf(category);
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 20),
@@ -184,21 +209,41 @@ class _SkillCategoryCardState extends State<_SkillCategoryCard> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // Important: fit content
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              widget.category.title,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color:
-                    _isHovered
-                        ? AppColors.primaryAccent
-                        : AppColors.primaryText,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: _isHovered ? AppColors.primaryGradient : null,
+                    color: _isHovered ? null : AppColors.secondaryBackground,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    widget.category.icon,
+                    size: 22,
+                    color: _isHovered ? Colors.white : AppColors.primaryAccent,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    widget.category.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color:
+                          _isHovered
+                              ? AppColors.primaryAccent
+                              : AppColors.primaryText,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Wrap(
-              // Removed Expanded, added Wrap directly
               spacing: 8,
               runSpacing: 8,
               children:
@@ -242,7 +287,7 @@ class _SkillChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color:
               parentHovered ? AppColors.primaryAccent : AppColors.primaryText,
           fontWeight: FontWeight.w500,
